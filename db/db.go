@@ -3,6 +3,7 @@ package db
 import (
   "fmt"
   "time"
+  "errors"
   "github.com/nu7hatch/gouuid"  
   "github.com/jinzhu/gorm"
   _ "github.com/lib/pq"
@@ -22,7 +23,7 @@ type User struct {
 type Session struct {
   Id           int64
   Uuid         string  `sql:"size:255;not null;unique"`
-  User_id      int64
+  User_id      string
   CreatedAt    time.Time
 }
 
@@ -60,35 +61,46 @@ func (u *User) BeforeCreate() (err error) {
 
 // Authenticate a user given the user name and the plaintext password
 // returns a http.HandlerFunc
-func Auth(username string, password string) http.HandlerFunc {
-  // get user from database
-  var user = User{} 
-  DB.Where("email = ?", username).First(&user)  
-  // hash the password
-  hashed := gutil.Hash([]byte(password), []byte(user.Salt))  
-  // return a function thatrejects the user as unauthorized if the hashed password doesn't match the one in the database
-  return func(res http.ResponseWriter, req *http.Request) {
-    if user.Password != hashed {
-      http.Error(res, "Not Authorized", http.StatusUnauthorized)
-    }
-  }
-}
+// func Validate(session_id string) http.HandlerFunc {
+//   // get user from database
+//   var user = User{} 
+//   DB.Where("email = ?", username).First(&user)  
+//   // hash the password
+//   hashed := gutil.Hash([]byte(password), []byte(user.Salt))  
+//   // return a function thatrejects the user as unauthorized if the hashed password doesn't match the one in the database
+//   return func(res http.ResponseWriter, req *http.Request) {
+//     if user.Password != hashed {
+//       http.Error(res, "Not Authorized", http.StatusUnauthorized)
+//     }
+//   }
+// }
 
 // Authenticate a user given the user name and the plaintext password
-func Auth(email string, password string) bool {
+func Auth(email string, password string) (session_id string, err error) {
   // get user from database
   var user = User{} 
-  DB.Where("email = ?", email).First(&user)  
+  err = DB.Where("email = ?", email).First(&user).Error
+  if err != nil {
+    return
+  }
   // hash the password
   fmt.Println("user password:", user.Password)
   hashed := gutil.Hash([]byte(password), []byte(user.Salt))  
   
   fmt.Println("hashed password:", hashed)
   if user.Password == hashed {
-    return true
+    fmt.Println("user uuid:", user.Uuid)
+    sess := Session{User_id: user.Uuid}
+    err = DB.Save(&sess).Error
+    if err != nil {
+      fmt.Println("error (auth):", err)
+      return
+    }
+    session_id = sess.Uuid
   } else {
-    return false
+    err = errors.New("Wrong password")
   }
+  return
 }
 
 // Before creating a session, add in the uuid

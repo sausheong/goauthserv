@@ -11,14 +11,15 @@ import (
 
 func main() {
   m := martini.Classic()
+  
   store := sessions.NewCookieStore([]byte("goauthserv-secret"))
   m.Use(sessions.Sessions("goauthserv-session", store))  
+  
   m.Use(render.Renderer(render.Options{
-    Directory: "templates", // Specify what path to load the templates from.
-    Layout: "layout", // Specify a layout template. Layouts can call {{ yield }} to render the current template.
-    Extensions: []string{".tmpl", ".html"}, // Specify extensions to load for templates.
-    Charset: "UTF-8", // Sets encoding for json and html content-types. Default is "UTF-8".
-    IndentJSON: true, // Output human readable JSON
+    Directory:  "templates", 
+    Layout:     "layout", 
+    Extensions: []string{".tmpl", ".html"}, 
+    IndentJSON: true, 
   }))
   
   m.Get("/", func(r render.Render) {    
@@ -45,15 +46,16 @@ func main() {
     
     fmt.Println("email:", email)
     fmt.Println("password:", password)
-    auth := gdb.Auth(email, password)    
-
-    if auth {
-      session.Set("user_session", )
-      r.Redirect("/")
-    } else {
+    session_id, err := gdb.Auth(email, password)    
+    fmt.Println("session_id (web):", session_id)
+    fmt.Println("err (web):", err)
+    if err != nil {
       http.Error(res, "Not Authorized", http.StatusUnauthorized)
+    } else {
+      
+      session.Set("user_session", session_id)
+      r.Redirect("/")      
     }
-    
   })
   // 
   // 
