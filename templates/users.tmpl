@@ -1,0 +1,43 @@
+<div class='content'>
+  <div class='row'>
+    <div class='lead'>
+      <a class='pull-right' href='/users/new'>
+        <i class='fa fa-plus'></i>
+        Add new user
+      </a>
+    </div>
+  </div>
+  <div class='row'>
+    <table class='table table-striped'>
+      <thead>
+        <th class='col-md-3'>Name</th>
+        <th class='col-md-4'>Email</th>
+        <th class='col-md-2'>Created</th>
+        <th class='col-md-3'>&nbsp;</th>
+      </thead>
+      <tbody>
+        {{ range .}}
+        <tr>
+          <td>{{ .Name }}</td>
+          <td>{{ .Email }}</td>
+          <td>{{ .CreatedAt }}</td>
+          <td style='text-align: right'>
+            <a class='btn btn-xs btn-default' href='/users/edit/{{ .Uuid }}'>
+              <i class='fa fa-pencil'></i>
+              edit
+            </a>
+            <a class='btn btn-xs btn-default' href='/users/reset/{{ .Uuid }}'>
+              <i class='fa fa-key'></i>
+              reset
+            </a>
+            <a class='btn btn-xs btn-default' href='/users/remove/{{ .Uuid }}'>
+              <i class='fa fa-times'></i>
+              remove
+            </a>
+          </td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+</div>

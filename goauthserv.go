@@ -22,8 +22,7 @@ func main() {
     IndentJSON: true, 
   }))
   
-  m.Get("/", require_login, func(s sessions.Session, r render.Render, res http.ResponseWriter) {    
-    
+  m.Get("/", require_login, func(s sessions.Session, r render.Render, res http.ResponseWriter) {        
     r.HTML(200, "index", nil)
   })
   
@@ -59,13 +58,15 @@ func main() {
       r.Redirect("/")      
     }
   })
-  // 
-  // 
-  // m.Get("/users", func() string {
-  //   return
-  // })
-  // 
-  // 
+  
+  
+  m.Get("/users", require_login, func(r render.Render)  {
+    users := []gdb.User{}
+    gdb.DB.Find(&users)
+    r.HTML(200, "users", users)
+  })
+  
+  
   // m.Get("/users/user/:uuid", func(params martini.Params) string {
   //   return
   // })
