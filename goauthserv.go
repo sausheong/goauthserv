@@ -22,7 +22,8 @@ func main() {
     IndentJSON: true, 
   }))
   
-  m.Get("/", func(r render.Render) {    
+  m.Get("/", require_login, func(s sessions.Session, r render.Render, res http.ResponseWriter) {    
+    
     r.HTML(200, "index", nil)
   })
   
@@ -31,11 +32,12 @@ func main() {
     r.HTML(200, "login", nil, render.HTMLOptions{Layout: ""}) // no layout
   })
   
-  // m.Get("/logout", func(r render.Render) string {
-  //   return
-  // })
-  // 
-  // 
+  m.Get("/logout", func(s sessions.Session, r render.Render) {
+    s.Clear()
+    r.Redirect("/login")
+  })
+  
+  
   m.Post("/auth", func(r render.Render, req *http.Request, res http.ResponseWriter, session sessions.Session) {
     err := req.ParseForm()
     if err != nil {
@@ -108,4 +110,16 @@ func main() {
   
   m.Run()
 }
+
+// Authenticate a user given the user name and the plaintext password
+// returns a http.HandlerFunc
+
+func require_login(sess sessions.Session, r render.Render) {
+  s := sess.Get("user_session")
+  if  s == nil {
+    r.Redirect("/login")
+  }
+
+}
+
 

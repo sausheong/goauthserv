@@ -4,6 +4,7 @@ import (
   "fmt"
   "time"
   "errors"
+
   "github.com/nu7hatch/gouuid"  
   "github.com/jinzhu/gorm"
   _ "github.com/lib/pq"
@@ -32,7 +33,7 @@ func init() {
   var err error
   DB, err = gorm.Open("postgres", "user=goauthserv password=goauthserv dbname=goauthserv sslmode=disable")
   if err != nil {
-      panic(fmt.Sprintf("Got error when connect database, the error is '%v'", err))
+    panic(fmt.Sprintf("Got error when connect database, the error is '%v'", err))
   }
 }
 
@@ -40,13 +41,13 @@ func init() {
 func (u *User) BeforeCreate() (err error) {
   u5, err := uuid.NewV5(uuid.NamespaceURL, []byte("goauthserv-user"))
   if err != nil {
-      fmt.Println("UUID error:", err)
-      return
+    fmt.Println("UUID error:", err)
+    return
   }
   u4, err := uuid.NewV4()
   if err != nil {
-      fmt.Println("Salt error:", err)
-      return
+    fmt.Println("Salt error:", err)
+    return
   }
   fmt.Println("user email", u.Email)
   fmt.Println("user password", u.Password)
@@ -59,21 +60,7 @@ func (u *User) BeforeCreate() (err error) {
   return
 }
 
-// Authenticate a user given the user name and the plaintext password
-// returns a http.HandlerFunc
-// func Validate(session_id string) http.HandlerFunc {
-//   // get user from database
-//   var user = User{} 
-//   DB.Where("email = ?", username).First(&user)  
-//   // hash the password
-//   hashed := gutil.Hash([]byte(password), []byte(user.Salt))  
-//   // return a function thatrejects the user as unauthorized if the hashed password doesn't match the one in the database
-//   return func(res http.ResponseWriter, req *http.Request) {
-//     if user.Password != hashed {
-//       http.Error(res, "Not Authorized", http.StatusUnauthorized)
-//     }
-//   }
-// }
+
 
 // Authenticate a user given the user name and the plaintext password
 func Auth(email string, password string) (session_id string, err error) {
@@ -105,11 +92,11 @@ func Auth(email string, password string) (session_id string, err error) {
 
 // Before creating a session, add in the uuid
 func (u *Session) BeforeCreate() (err error) {
-  u5, err := uuid.NewV5(uuid.NamespaceURL, []byte("goauthserv-session"))
+  u4, err := uuid.NewV4()
   if err != nil {
-      fmt.Println("error:", err)
-      return
+    fmt.Println("error:", err)
+    return
   }
-  u.Uuid = u5.String()
+  u.Uuid = u4.String()
   return
 }
