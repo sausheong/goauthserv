@@ -29,6 +29,7 @@ type Session struct {
 }
 
 var DB gorm.DB
+// initialize gorm
 func init() {
   var err error
   DB, err = gorm.Open("postgres", "user=goauthserv password=goauthserv dbname=goauthserv sslmode=disable")
@@ -36,6 +37,12 @@ func init() {
     panic(fmt.Sprintf("Got error when connect database, the error is '%v'", err))
   }
 }
+
+// format the CreatedAt date to display nicely on the screen
+func (u *User) CreatedAtDate() string {
+  return u.CreatedAt.Format("01-02-2006")
+}
+
 
 // Before creating a user, add in the uuid
 func (u *User) BeforeCreate() (err error) {
