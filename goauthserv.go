@@ -41,10 +41,9 @@ func main() {
   m.Post("/auth", func(r render.Render, req *http.Request, res http.ResponseWriter, session sessions.Session) {
     email := req.PostFormValue("email")
     password := req.PostFormValue("password")
-
     session_id, err := gdb.Auth(email, password)    
     if err != nil {
-      http.Error(res, "Not Authorized", http.StatusUnauthorized)
+      r.Error(401)
     } else {      
       session.Set("user_session", session_id)
       r.Redirect("/")      
@@ -54,8 +53,11 @@ func main() {
   // List of all users
   m.Get("/users", require_login, func(r render.Render)  {
     users := []gdb.User{}
-    gdb.DB.Find(&users)
-    r.HTML(200, "users", users)
+    if gdb.DB.Find(&users).RecordNotFound() {
+      r.Error(404)
+    } else {
+      r.HTML(200, "users", users)
+    }    
   })
   
   // Add new user page
@@ -66,14 +68,26 @@ func main() {
   // Edit a specific user
   m.Get("/users/edit/:uuid", func(r render.Render, params martini.Params) {
     user := gdb.User{}
-    gdb.DB.Where("uuid = ?", params["uuid"]).First(&user)
-    r.HTML(200, "users.edit", user)
+    if gdb.DB.Where("uuid = ?", params["uuid"]).First(&user).RecordNotFound() {
+      r.Error(404)
+    } else {
+      r.HTML(200, "users.edit", user)
+    }    
   })
   
   // Remove an existing user
-  // m.Get("/users/remove/:uuid", func(params martini.Params) string {
-  //   return
-  // })
+  m.Get("/users/remove/:uuid", func(r render.Render, params martini.Params) {
+    user := gdb.User{}
+    if gdb.DB.Where("uuid = ?", params["uuid"]).First(&user).RecordNotFound() {
+      r.Error(404)
+    } else {
+      if err := gdb.DB.Delete(&user).Error; err != nil {
+        r.Error(500)
+      } else {
+        r.Redirect("/users")        
+      }
+    }
+  })
   // 
   // Reset the password for an existing user
   // m.Get("/users/reset/:uuid", func(params martini.Params) string {
@@ -88,14 +102,19 @@ func main() {
     uuid := req.PostFormValue("uuid")
     var user = gdb.User{}
     if uuid != "" {
-      gdb.DB.Where("uuid = ?", uuid).First(&user)
+      if gdb.DB.Where("uuid = ?", uuid).First(&user).RecordNotFound() {
+        r.Error(404)
+      }
       user.Name = name
       user.Email = email
     } else {
       user = gdb.User{Name: name, Email: email}      
     }
-    gdb.DB.Save(&user) 
-    r.Redirect("/users")    
+    if err := gdb.DB.Save(&user).Error; err != nil {
+      r.Error(500)
+    } else {
+      r.Redirect("/users")
+    }        
   })
   // 
   // 
@@ -111,8 +130,6 @@ func main() {
   //   return
   // })
 
-
-  
   m.Run()
 }
 
@@ -123,7 +140,7 @@ func main() {
 func require_login(sess sessions.Session, r render.Render) {
   s := sess.Get("user_session")
   if  s == nil {
-    s.Clear()
+    sess.Clear()
     r.Redirect("/login")
   }
 }
