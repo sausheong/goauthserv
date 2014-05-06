@@ -46,7 +46,7 @@ func (u *User) CreatedAtDate() string {
 
 // Before creating a user, add in the uuid
 func (u *User) BeforeCreate() (err error) {
-  u5, err := uuid.NewV5(uuid.NamespaceURL, []byte("goauthserv-user"))
+  u5, err := uuid.NewV5(uuid.NamespaceURL, []byte(u.Email))
   if err != nil {
     fmt.Println("UUID error:", err)
     return

@@ -1,0 +1,23 @@
+<div class="content">
+  <div class="row">
+    <div class="lead text-info">Modify existing</div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <form action="/users" method="post">
+        <div class="form-group">
+          <label>Name</label>
+          <input class="form-control" name="name" placeholder="User's name" value="{{ .Name }}"> 
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input class="form-control" name="email" placeholder="User's email (will be used for login)" value="{{ .Email }}">
+          <input name="uuid" type="hidden" value="{{ .Uuid }}">
+        </div>
+        <hr>
+        <button class="btn btn-primary" type="submit">Modify user</button>
+        <a class="btn btn-default" href="/users">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>

@@ -38,10 +38,10 @@ func main() {
   
   
   m.Post("/auth", func(r render.Render, req *http.Request, res http.ResponseWriter, session sessions.Session) {
-    err := req.ParseForm()
-    if err != nil {
-      http.Error(res, "Not Authorized", http.StatusUnauthorized)
-    }    
+    // err := req.ParseForm()
+    // if err != nil {
+    //   http.Error(res, "Not Authorized", http.StatusUnauthorized)
+    // }    
     email := req.PostFormValue("email")
     password := req.PostFormValue("password")
     
@@ -71,14 +71,16 @@ func main() {
   //   return
   // })
   // 
-  // m.Get("/users/new", func() string {
-  //   return
-  // })
-  // 
-  // m.Get("/users/edit/:uuid", func(params martini.Params) string {
-  //   return
-  // })
-  // 
+  m.Get("/users/new", require_login, func(r render.Render)  {
+    r.HTML(200, "users.new", nil)
+  })
+  
+  m.Get("/users/edit/:uuid", func(r render.Render, params martini.Params) {
+    user := gdb.User{}
+    gdb.DB.Where("uuid = ?", params["uuid"]).First(&user)
+    r.HTML(200, "users.edit", user)
+  })
+  
   // 
   // m.Get("/users/remove/:uuid", func(params martini.Params) string {
   //   return
@@ -89,9 +91,20 @@ func main() {
   //   return
   // })
   // 
-  m.Post("/users", func(params martini.Params) {
-    user := gdb.User{Name: "sausheong"}
-    gdb.DB.Save(&user)
+  m.Post("/users", func(r render.Render, req *http.Request, params martini.Params) {
+    name := req.PostFormValue("name")
+    email := req.PostFormValue("email") 
+    uuid := req.PostFormValue("uuid")
+    var user = gdb.User{}
+    if uuid != "" {
+      gdb.DB.Where("uuid = ?", uuid).First(&user)
+      user.Name = name
+      user.Email = email
+    } else {
+      user = gdb.User{Name: name, Email: email}      
+    }
+    gdb.DB.Save(&user) 
+    r.Redirect("/users")    
   })
   // 
   // 
