@@ -10,20 +10,23 @@ import (
   "github.com/martini-contrib/render"  
 )
 
-
+// GET /
 func GetIndex(r render.Render) {        
   r.HTML(200, "index", nil)
 }
 
+// GET /login
 func GetLogin(r render.Render) {
   r.HTML(200, "login", nil, render.HTMLOptions{Layout: ""}) // no layout
 }
 
+// GET /logout
 func GetLogout(s sessions.Session, r render.Render) {
   s.Clear()
   r.Redirect("/login")
 }
 
+// POST /auth
 func PostAuth(s sessions.Session, r render.Render, req *http.Request) {
   email := req.PostFormValue("email")
   password := req.PostFormValue("password")
@@ -36,6 +39,7 @@ func PostAuth(s sessions.Session, r render.Render, req *http.Request) {
   }
 }
 
+// GET /users
 func GetUsers(r render.Render)  {
   users := []gdb.User{}
   if gdb.DB.Find(&users).RecordNotFound() {
@@ -45,10 +49,12 @@ func GetUsers(r render.Render)  {
   }    
 }
 
+// GET /users/new
 func GetUsersNew(r render.Render)  {
   r.HTML(200, "users.new", nil)
 }
 
+// GET /users/edit/:uuid
 func GetUsersEdit(r render.Render, params martini.Params) {
   user := gdb.User{}
   if gdb.DB.Where("uuid = ?", params["uuid"]).First(&user).RecordNotFound() {
@@ -58,6 +64,7 @@ func GetUsersEdit(r render.Render, params martini.Params) {
   }    
 }
 
+// GET /users/remove/:uuid
 func GetUsersRemove(r render.Render, params martini.Params) {
   user := gdb.User{}
   if gdb.DB.Where("uuid = ?", params["uuid"]).First(&user).RecordNotFound() {    
@@ -71,6 +78,7 @@ func GetUsersRemove(r render.Render, params martini.Params) {
   }
 }
 
+// GET /users/reset/:uuid
 func GetUsersReset(r render.Render, params martini.Params) {
   user := gdb.User{}
   if gdb.DB.Where("uuid = ?", params["uuid"]).First(&user).RecordNotFound() {
@@ -84,6 +92,7 @@ func GetUsersReset(r render.Render, params martini.Params) {
   }
 }
 
+// POST /users
 func PostUsers(r render.Render, req *http.Request) {
   name := req.PostFormValue("name")
   email := req.PostFormValue("email") 
@@ -105,6 +114,7 @@ func PostUsers(r render.Render, req *http.Request) {
   }        
 }
 
+// POST /authenticate
 func PostAuthenticate(r render.Render, req *http.Request) {
   email := req.PostFormValue("email")
   password := req.PostFormValue("password")
@@ -116,6 +126,7 @@ func PostAuthenticate(r render.Render, req *http.Request) {
   }
 }
 
+// POST /validate
 func PostValidate(r render.Render, req *http.Request) {
   s := req.PostFormValue("session")
   session := gdb.Session{}
@@ -129,10 +140,10 @@ func PostValidate(r render.Render, req *http.Request) {
 // Handler to require a user to log in. If the user is currently logged in
 // nothing happens. Otherwise clear existing session and redirect the user 
 // to the login page
-func RequireLogin(sess sessions.Session, r render.Render) {
-  s := sess.Get("user_session")
-  if  s == nil {
-    sess.Clear()
+func RequireLogin(s sessions.Session, r render.Render) {
+  session := s.Get("user_session")
+  if  session == nil {
+    s.Clear()
     r.Redirect("/login")
   }
 }
