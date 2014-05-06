@@ -1,6 +1,7 @@
 package utils
 
 import (
+  "os"
   "fmt"
   "strings"
   "crypto/sha256"
@@ -10,16 +11,17 @@ import (
   "github.com/sendgrid/sendgrid-go"
 )
 
-// hashes a plaintext, given a salt and returns it as a string
+// Hashes a plaintext, given a salt and returns it as a string
 func Hash(plaintext []byte, salt []byte) string {
   defer clear(plaintext)
   return fmt.Sprintf("%X", pbkdf2.Key(plaintext, salt, 4096, sha256.Size, sha256.New))
 }
 
+// Send a reset password
 func SendResetPassword(recipient string, password string) {  
   html, _ := ioutil.ReadFile("password_reset.html")
   msg := strings.Replace(string(html), "-password-", password, 1)
-  sg := sendgrid.NewSendGridClient("sausheong@gmail.com", "chang123")
+  sg := sendgrid.NewSendGridClient(os.Getenv("SGUSER"), os.Getenv("SGPASS"))
   message := sendgrid.NewMail()
   message.AddTo(recipient)
   message.AddToName("goauthserv")
@@ -31,6 +33,7 @@ func SendResetPassword(recipient string, password string) {
   }  
 }
 
+// Randomly generates a password
 func RandPassword(str_size int) string {
   alphanum := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
   var bytes = make([]byte, str_size)
@@ -41,6 +44,7 @@ func RandPassword(str_size int) string {
   return string(bytes)
 }
 
+// clear the byte array
 func clear(b []byte) {
   for i := 0; i < len(b); i++ {
     b[i] = 0;
