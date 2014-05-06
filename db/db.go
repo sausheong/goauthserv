@@ -43,7 +43,6 @@ func (u *User) CreatedAtDate() string {
   return u.CreatedAt.Format("01-02-2006")
 }
 
-
 // Before creating a user, add in the uuid
 func (u *User) BeforeCreate() (err error) {
   u5, err := uuid.NewV5(uuid.NamespaceURL, []byte(u.Email))
@@ -55,19 +54,13 @@ func (u *User) BeforeCreate() (err error) {
   if err != nil {
     fmt.Println("Salt error:", err)
     return
-  }
-  fmt.Println("user email", u.Email)
-  fmt.Println("user password", u.Password)
-  
-  hashed := gutil.Hash([]byte(u.Password), []byte(u4.String()))  
-  
+  }  
+  hashed := gutil.Hash([]byte(u.Password), []byte(u4.String()))    
   u.Password = hashed  
   u.Salt = u4.String()
   u.Uuid = u5.String()
   return
 }
-
-
 
 // Authenticate a user given the user name and the plaintext password
 func Auth(email string, password string) (session_id string, err error) {
@@ -78,12 +71,9 @@ func Auth(email string, password string) (session_id string, err error) {
     return
   }
   // hash the password
-  fmt.Println("user password:", user.Password)
   hashed := gutil.Hash([]byte(password), []byte(user.Salt))  
-  
-  fmt.Println("hashed password:", hashed)
+
   if user.Password == hashed {
-    fmt.Println("user uuid:", user.Uuid)
     sess := Session{User_id: user.Uuid}
     err = DB.Save(&sess).Error
     if err != nil {
