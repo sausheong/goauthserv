@@ -105,6 +105,27 @@ func PostUsers(r render.Render, req *http.Request) {
   }        
 }
 
+func PostAuthenticate(r render.Render, req *http.Request) {
+  email := req.PostFormValue("email")
+  password := req.PostFormValue("password")
+  session_id, err := gdb.Auth(email, password)    
+  if err != nil {
+    r.Error(401)
+  } else {      
+    r.JSON(200, map[string]interface{}{"session": session_id})
+  }
+}
+
+func PostValidate(r render.Render, req *http.Request) {
+  s := req.PostFormValue("session")
+  session := gdb.Session{}
+  if gdb.DB.Where("uuid = ?", s).First(&session).RecordNotFound() {
+    r.Error(404)
+  } else {
+    r.Status(200)
+  }
+}
+
 // Handler to require a user to log in. If the user is currently logged in
 // nothing happens. Otherwise clear existing session and redirect the user 
 // to the login page

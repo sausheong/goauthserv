@@ -48,19 +48,14 @@ func main() {
     
   // Create a new user or modify an existing user
   m.Post("/users", RequireLogin, PostUsers)
-  // 
-  // 
-  // //
-  // // APIs from here on
-  // // 
-  // 
-  // m.Post("/authenticate", func() string {
-  //   return
-  // })
-  // 
-  // m.Post("/validate", func() string {
-  //   return
-  // })
+
+  // APIs from here on
+
+  // Authenticate a user given the user name and password
+  m.Post("/authenticate", PostAuthenticate)
+
+  // Validate a session UUID
+  m.Post("/validate", PostValidate)
 
   m.Run()
 }
