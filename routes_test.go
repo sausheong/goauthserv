@@ -49,6 +49,21 @@ func Test_GetLogin(t *testing.T) {
   }
 }
 
+func Test_GetUsers(t *testing.T) {
+  m := martini.Classic()
+  m.Use(render.Renderer())
+  m.Get("/users", GetUsers)
+  
+  res := httptest.NewRecorder()
+  req, _ := http.NewRequest("GET", "/users", nil)
+  
+  m.ServeHTTP(res, req)
+  
+  if res.Code != 200 {
+    t.Errorf("Response code is %v", res.Code)
+  }  
+}
+
 func Test_PostAuth(t *testing.T) {
   m := martini.Classic()
   m.Use(render.Renderer())
