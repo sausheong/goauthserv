@@ -9,7 +9,8 @@ import (
   "io"
   "bytes"
   "io/ioutil"  
-  
+  "strings"
+
   "github.com/go-martini/martini" 
   "github.com/martini-contrib/render"
   "github.com/martini-contrib/sessions"
@@ -74,6 +75,25 @@ func Test_GetUsersNew(t *testing.T) {
   
   m.ServeHTTP(res, req)
   
+  if res.Code != 200 {
+    t.Errorf("Response code is %v", res.Code)
+  }  
+}
+
+func Test_GetUsersEdit(t *testing.T) {
+  m := martini.Classic()
+  m.Use(render.Renderer())
+  m.Get("/users/edit/:uuid", GetUsersEdit)
+
+  
+  user := create_user("Sau Sheong", "sausheong@me.com", "123")  
+  
+  defer delete_user(user)  
+  res := httptest.NewRecorder()
+  url := strings.Join([]string{"/users/edit/", user.Uuid}, "")
+  req, _ := http.NewRequest("GET", url, nil)
+  
+  m.ServeHTTP(res, req)
   if res.Code != 200 {
     t.Errorf("Response code is %v", res.Code)
   }  
