@@ -1,0 +1,4 @@
+psql -h localhost -c "create user goauthserv with password 'goauthserv'"
+psql -h localhost -c "drop database if exists goauthserv"
+psql -h localhost -c "create database goauthserv"
+psql -h localhost -c "grant all privileges on database goauthserv to goauthserv"
