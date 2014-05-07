@@ -1,7 +1,7 @@
 package main
 
 import (
-  gdb "goauthserv/db"
+  gdb "github.com/sausheong/goauthserv/db"
   
 	"net/http"
 	"net/http/httptest"

@@ -8,7 +8,7 @@ import (
   "github.com/nu7hatch/gouuid"  
   "github.com/jinzhu/gorm"
   _ "github.com/lib/pq"
-  gutil "goauthserv/utils"
+  gutil "github.com/sausheong/goauthserv/utils"
 )
 
 type User struct {

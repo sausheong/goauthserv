@@ -1,7 +1,7 @@
 package main
 
 import (
-  gdb "goauthserv/db"
+  gdb "github.com/sausheong/goauthserv/db"
   "goauthserv/utils"
   "net/http"
   "github.com/go-martini/martini" 
