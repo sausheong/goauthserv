@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/sausheong/goauthserv.png)](https://travis-ci.org/sausheong/goauthserv)
+
 # goauthserv
 
 goauthserv is a REST-based authentication service written in Go with Martini as the web framework and Gorm as the persistence layer.
