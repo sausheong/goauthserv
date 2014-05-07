@@ -3,7 +3,6 @@ package main
 import (
   gdb "goauthserv/db"
   "goauthserv/utils"
-  // "fmt"
   "net/http"
   "github.com/go-martini/martini" 
   "github.com/martini-contrib/sessions"
@@ -96,6 +95,7 @@ func GetUsersReset(r render.Render, params martini.Params) {
 func PostUsers(r render.Render, req *http.Request) {
   name := req.PostFormValue("name")
   email := req.PostFormValue("email") 
+  password := req.PostFormValue("password")
   uuid := req.PostFormValue("uuid")
   var user = gdb.User{}
   if uuid != "" {
@@ -105,7 +105,7 @@ func PostUsers(r render.Render, req *http.Request) {
     user.Name = name
     user.Email = email
   } else {
-    user = gdb.User{Name: name, Email: email}      
+    user = gdb.User{Name: name, Email: email, Password: password}      
   }
   if err := gdb.DB.Save(&user).Error; err != nil {
     r.Error(500)
