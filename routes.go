@@ -2,7 +2,7 @@ package main
 
 import (
   gdb "github.com/sausheong/goauthserv/db"
-  "goauthserv/utils"
+  "github.com/sausheong/goauthserv/utils"
   "net/http"
   "github.com/go-martini/martini" 
   "github.com/martini-contrib/sessions"

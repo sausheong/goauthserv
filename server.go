@@ -1,7 +1,6 @@
 package main
 
 import (
- // "fmt"
  "github.com/go-martini/martini" 
  "github.com/martini-contrib/sessions"
  "github.com/martini-contrib/render"
