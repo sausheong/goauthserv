@@ -1,14 +1,13 @@
 package db
 
 import (
-  "fmt"
   "time"
   "errors"
-
   "github.com/nu7hatch/gouuid"  
   "github.com/jinzhu/gorm"
   _ "github.com/lib/pq"
-  gutil "github.com/sausheong/goauthserv/utils"
+  "github.com/sausheong/goauthserv/utils"
+  "fmt"
 )
 
 type User struct {
@@ -30,7 +29,7 @@ type Session struct {
 
 var DB gorm.DB
 // initialize gorm
-func init() {
+func init() {  
   var err error
   DB, err = gorm.Open("postgres", "user=goauthserv password=goauthserv dbname=goauthserv sslmode=disable")
   if err != nil {
@@ -55,7 +54,7 @@ func (u *User) BeforeCreate() (err error) {
     fmt.Println("Salt error:", err)
     return
   }  
-  hashed := gutil.Hash([]byte(u.Password), []byte(u4.String()))    
+  hashed := utils.Hash([]byte(u.Password), []byte(u4.String()))    
   u.Password = hashed  
   u.Salt = u4.String()
   u.Uuid = u5.String()
@@ -71,13 +70,12 @@ func Auth(email string, password string) (session_id string, err error) {
     return
   }
   // hash the password
-  hashed := gutil.Hash([]byte(password), []byte(user.Salt))  
+  hashed := utils.Hash([]byte(password), []byte(user.Salt))  
 
   if user.Password == hashed {
     sess := Session{User_id: user.Uuid}
     err = DB.Save(&sess).Error
-    if err != nil {
-      fmt.Println("error (auth):", err)
+    if err != nil {      
       return
     }
     session_id = sess.Uuid

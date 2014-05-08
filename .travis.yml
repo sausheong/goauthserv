@@ -4,5 +4,10 @@ go:
  - release
  - tip
 
+before_script:  
+  - psql -c 'create database goauthserv;' -U postgres
+  - psql -c "create user goauthserv with password 'goauthserv'"
+  - psql -c "grant all privileges on database goauthserv to goauthserv"  
+  
 script:
  - go test -v ./...

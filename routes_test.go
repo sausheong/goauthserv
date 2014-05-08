@@ -151,11 +151,19 @@ func to_string(stream io.Reader) string {
 
 func create_user(name string, email string, password string) gdb.User {
   user := gdb.User{Name: name, Email: email, Password: password}      
-  gdb.DB.Save(&user)  
-  return user
+  err := gdb.DB.DB().Ping(); if err != nil {
+    return user
+  } else {
+    gdb.DB.Save(&user)  
+    return user    
+  }
 }
 
 func delete_user(user gdb.User) (err error) {
-  err = gdb.DB.Delete(&user).Error
-  return
+  db_err := gdb.DB.DB().Ping(); if db_err != nil {
+    return
+  } else {
+    err = gdb.DB.Delete(&user).Error
+    return    
+  }
 }
