@@ -9,6 +9,7 @@ before_script:
   - psql -c 'create database goauthserv;' -U postgres
   - psql -c "create user goauthserv with password 'goauthserv'" -U postgres
   - psql -c "grant all privileges on database goauthserv to goauthserv" -U postgres
+  - go run setup/setup.go
   
 script:
  - go test -v ./...
