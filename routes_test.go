@@ -10,7 +10,8 @@ import (
   "bytes"
   "io/ioutil"  
   "strings"
-
+  "encoding/json"
+  
   "github.com/go-martini/martini" 
   "github.com/martini-contrib/render"
   "github.com/martini-contrib/sessions"
@@ -135,6 +136,44 @@ func Test_PostAuthenticate(t *testing.T) {
   req.PostForm.Add("password", "123")
   
   m.ServeHTTP(res, req)  
+  
+  if res.Code != 200 {
+    t.Errorf("Response code is %v", res.Code)
+  }
+  var json_msg interface{}
+  if err := json.Unmarshal(to_byte_array(res.Body), &json_msg); err != nil {
+    t.Errorf("Cannot get JSON, error is %v", err)
+  }  
+}
+
+func Test_PostValidate(t *testing.T) {
+  m := martini.Classic()
+  m.Use(render.Renderer())
+  m.Post("/authenticate", PostAuthenticate)
+  m.Post("/validate", PostValidate)
+  
+  user := create_user("Sau Sheong", "sausheong@me.com", "123")
+  defer delete_user(user)
+  
+  res := httptest.NewRecorder()
+  req, _ := http.NewRequest("POST", "/authenticate", nil)
+  req.ParseForm()
+  req.PostForm.Add("email", "sausheong@me.com")
+  req.PostForm.Add("password", "123")
+  
+  m.ServeHTTP(res, req)  
+  var json_msg interface{}
+  if err := json.Unmarshal(to_byte_array(res.Body), &json_msg); err != nil {
+    t.Errorf("Cannot get JSON, error is %v", err)
+  }
+  msg := json_msg.(map[string]interface{})
+  
+  req, _ = http.NewRequest("POST", "/validate", nil)
+  req.ParseForm()
+  req.PostForm.Add("session", msg["session"].(string))
+  
+  m.ServeHTTP(res, req)  
+  
   if res.Code != 200 {
     t.Errorf("Response code is %v", res.Code)
   }
@@ -147,6 +186,12 @@ func to_string(stream io.Reader) string {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(stream)
 	return buf.String()
+}
+
+func to_byte_array(stream io.Reader) []byte {
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(stream)
+	return buf.Bytes()
 }
 
 func create_user(name string, email string, password string) gdb.User {
