@@ -49,7 +49,9 @@ Finally run the server with this:
     
 Without PORT the server will run at port 3000. A SendGrid account allow you to reset user passwords by sending the user a reset email.
 
+## Clients
 
+A list of example clients (in different languages) using goauthserv can be found in the `clients` folder.
 
     
 
