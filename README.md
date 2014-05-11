@@ -18,7 +18,9 @@ REST API features:
 
 * Authentication of a user using email as account ID (returns a session)
 * Validation of a session
-* Authorization of a user to a resource (resource is any alphanumeric identifier) (NOT IMPLEMENTED YET)
+* Add a resource (resource is any alphanumeric identifier) 
+* Remove a resource 
+* Authorization of a user to a resource (NOT IMPLEMENTED YET)
 * Check authorization of a user for a resource  (NOT IMPLEMENTED YET)
 
 

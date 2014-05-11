@@ -137,6 +137,32 @@ func PostValidate(r render.Render, req *http.Request) {
 	}
 }
 
+// POST /authorize
+// Authorize a user to use a resource
+func PostAuthorize(r render.Render, req *http.Request) {
+  
+}
+
+// POST /check
+// Check if a user is authorized to use a resource
+func PostCheck(r render.Render, req *http.Request) {
+  
+}
+
+// POST /resource/add
+// Add a resource
+func PostResourceAdd(r render.Render, req *http.Request) {
+  
+}
+
+
+// POST /resource/remove
+// Remove a resource
+func PostResourceRemove(r render.Render, req *http.Request) {
+  
+}
+
+
 // Handler to require a user to log in. If the user is currently logged in
 // nothing happens. Otherwise clear existing session and redirect the user
 // to the login page

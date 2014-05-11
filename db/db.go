@@ -27,6 +27,23 @@ type Session struct {
   CreatedAt    time.Time
 }
 
+type Resource struct {
+  Id  int64
+  Uuid string  `sql:"size:255;not null;unique"`
+  Name string   `sql:"size:255;not null;unique"` // a friendly name for the resource
+  CreatedAt time.Time
+}
+
+// A permission allows a user to access the resource
+type Permission struct {
+  Id  int64
+  Uuid string  `sql:"size:255;not null;unique"`
+  User_id string
+  Resource_id string
+  CreatedAt time.Time
+  
+}
+
 var DB gorm.DB
 // initialize gorm
 func init() {  
@@ -87,6 +104,28 @@ func Auth(email string, password string) (session_id string, err error) {
 
 // Before creating a session, add in the uuid
 func (u *Session) BeforeCreate() (err error) {
+  u4, err := uuid.NewV4()
+  if err != nil {
+    fmt.Println("error:", err)
+    return
+  }
+  u.Uuid = u4.String()
+  return
+}
+
+// Before creating a resource, add in the uuid
+func (u *Resource) BeforeCreate() (err error) {
+  u4, err := uuid.NewV4()
+  if err != nil {
+    fmt.Println("error:", err)
+    return
+  }
+  u.Uuid = u4.String()
+  return
+}
+
+// Before creating a permission, add in the uuid
+func (u *Permission) BeforeCreate() (err error) {
   u4, err := uuid.NewV4()
   if err != nil {
     fmt.Println("error:", err)
