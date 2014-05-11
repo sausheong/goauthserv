@@ -18,8 +18,8 @@ REST API features:
 
 * Authentication of a user using email as account ID (returns a session)
 * Validation of a session
-* Add a resource (resource is any alphanumeric identifier) 
-* Remove a resource 
+* Add a resource (resource is any alphanumeric identifier) (NOT IMPLEMENTED YET)
+* Remove a resource (NOT IMPLEMENTED YET)
 * Authorization of a user to a resource (NOT IMPLEMENTED YET)
 * Check authorization of a user for a resource  (NOT IMPLEMENTED YET)
 
