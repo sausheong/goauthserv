@@ -99,6 +99,25 @@ func Test_GetUsersEdit(t *testing.T) {
 	}
 }
 
+func Test_GetUsersRemove(t *testing.T) {
+	m := martini.Classic()
+	m.Use(render.Renderer())
+	m.Get("/users/remove/:uuid", GetUsersRemove)
+
+	user := create_user("Sau Sheong", "sausheong@me.com", "123")
+
+	defer delete_user(user)
+	res := httptest.NewRecorder()
+	url := strings.Join([]string{"/users/remove/", user.Uuid}, "")
+	req, _ := http.NewRequest("GET", url, nil)
+
+	m.ServeHTTP(res, req)
+	if res.Code != 302 {
+		t.Errorf("Response code is %v", res.Code)
+	}
+}
+
+
 func Test_PostAuth(t *testing.T) {
 	m := martini.Classic()
 	m.Use(render.Renderer())
