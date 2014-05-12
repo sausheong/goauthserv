@@ -50,7 +50,7 @@ func GetUsers(r render.Render) {
 
 // GET /users/new
 func GetUsersNew(r render.Render) {
-	r.HTML(200, "users.new", nil)
+	r.HTML(200, "users/new", nil)
 }
 
 // GET /users/edit/:uuid
@@ -59,7 +59,7 @@ func GetUsersEdit(r render.Render, params martini.Params) {
 	if gdb.DB.Where("uuid = ?", params["uuid"]).First(&user).RecordNotFound() {
 		r.Error(404)
 	} else {
-		r.HTML(200, "users.edit", user)
+		r.HTML(200, "users/edit", user)
 	}
 }
 
