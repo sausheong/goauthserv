@@ -68,7 +68,10 @@ func Test_GetUsers(t *testing.T) {
 
 func Test_GetUsersNew(t *testing.T) {
 	m := martini.Classic()
-	m.Use(render.Renderer())
+	m.Use(render.Renderer(render.Options{
+		Directory:  "templates",
+		Extensions: []string{".tmpl", ".html"},
+	}))
 	m.Get("/users/new", GetUsersNew)
 
 	res := httptest.NewRecorder()
