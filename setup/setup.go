@@ -1,13 +1,15 @@
 package main
 
 import (
-	gdb "github.com/sausheong/goauthserv/db"
+	"github.com/sausheong/goauthserv/db"
 )
 
 func main() {
-  gdb.DB.Exec("DROP TABLE users;DROP TABLE sessions;")
-  gdb.DB.AutoMigrate(gdb.User{})
-  gdb.DB.AutoMigrate(gdb.Session{})
-  user := gdb.User{Name: "Admin", Email: "admin@goauthserv", Password: "admin"}
-  gdb.DB.Save(&user)
+  db.DB.Exec("DROP TABLE users;DROP TABLE sessions;DROP TABLE resources; DROP TABLE permissions;")
+  db.DB.AutoMigrate(db.User{})
+  db.DB.AutoMigrate(db.Session{})
+  db.DB.AutoMigrate(db.Resource{})
+  db.DB.AutoMigrate(db.Permission{})
+  user := db.User{Name: "Admin", Email: "admin@goauthserv", Password: "admin"}
+  db.DB.Save(&user)
 }

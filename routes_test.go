@@ -117,7 +117,6 @@ func Test_GetUsersRemove(t *testing.T) {
 	}
 }
 
-
 func Test_PostAuth(t *testing.T) {
 	m := martini.Classic()
 	m.Use(render.Renderer())
