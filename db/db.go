@@ -153,7 +153,7 @@ func (u *User) Activate() (err error) {
 }
 
 func (u *User) Deactivate() (err error) {
-  u.ActivationToken = nil
+  u.ActivationToken = ""
 	err = DB.Save(&u).Error
 	if err != nil {
 		return
