@@ -37,13 +37,13 @@ func main() {
 	m.Get("/users/new", RequireLogin, GetUsersNew)
 
 	// Edit a specific user
-	m.Get("/users/edit/:uuid", RequireLogin, GetUsersEdit)
+	m.Get("/users/:uuid/edit", RequireLogin, GetUsersEdit)
 
 	// Remove an existing user
-	m.Get("/users/remove/:uuid", RequireLogin, GetUsersRemove)
+	m.Get("/users/user/:uuid/remove", RequireLogin, GetUsersRemove)
 	//
 	// Reset the password for an existing user
-	m.Get("/users/reset/:uuid", RequireLogin, GetUsersReset)
+	m.Get("/users/user/:uuid/reset", RequireLogin, GetUsersReset)
 
 	// Create a new user or modify an existing user
 	m.Post("/users", RequireLogin, PostUsers)

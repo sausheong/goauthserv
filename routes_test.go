@@ -84,13 +84,13 @@ func Test_GetUsersNew(t *testing.T) {
 func Test_GetUsersEdit(t *testing.T) {
 	m := martini.Classic()
 	m.Use(render.Renderer())
-	m.Get("/users/edit/:uuid", GetUsersEdit)
+	m.Get("/users/user/:uuid/edit", GetUsersEdit)
 
 	user := create_user("Sau Sheong", "sausheong@me.com", "123")
 
 	defer delete_user(user)
 	res := httptest.NewRecorder()
-	url := strings.Join([]string{"/users/edit/", user.Uuid}, "")
+	url := strings.Join([]string{"/users/user/", user.Uuid, "/edit"}, "")
 	req, _ := http.NewRequest("GET", url, nil)
 
 	m.ServeHTTP(res, req)
@@ -102,13 +102,13 @@ func Test_GetUsersEdit(t *testing.T) {
 func Test_GetUsersRemove(t *testing.T) {
 	m := martini.Classic()
 	m.Use(render.Renderer())
-	m.Get("/users/remove/:uuid", GetUsersRemove)
+	m.Get("/users/user/:uuid/remove", GetUsersRemove)
 
 	user := create_user("Sau Sheong", "sausheong@me.com", "123")
 
 	defer delete_user(user)
 	res := httptest.NewRecorder()
-	url := strings.Join([]string{"/users/remove/", user.Uuid}, "")
+	url := strings.Join([]string{"/users/user/", user.Uuid, "/remove"}, "")
 	req, _ := http.NewRequest("GET", url, nil)
 
 	m.ServeHTTP(res, req)

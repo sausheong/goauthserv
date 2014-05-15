@@ -22,15 +22,15 @@
           <td>{{ .Email }}</td>
           <td>{{ .CreatedAtDate }}</td>
           <td style='text-align: right'>
-            <a class='btn btn-xs btn-default' href='/users/edit/{{ .Uuid }}'>
+            <a class='btn btn-xs btn-default' href='/users/user/{{ .Uuid }}/edit'>
               <i class='fa fa-pencil'></i>
               edit
             </a>
-            <a class='btn btn-xs btn-default' href='/users/reset/{{ .Uuid }}'>
+            <a class='btn btn-xs btn-default' href='/users/user/{{ .Uuid }}/reset'>
               <i class='fa fa-key'></i>
               reset
             </a>
-            <a class='btn btn-xs btn-default' href='/users/remove/{{ .Uuid }}'>
+            <a class='btn btn-xs btn-default' href='/users/user/{{ .Uuid }}/remove'>
               <i class='fa fa-times'></i>
               remove
             </a>
