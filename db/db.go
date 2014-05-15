@@ -17,6 +17,8 @@ type User struct {
 	Password  string `sql:"size:255"`
 	Name      string `sql:"size:255"`
 	Salt      string `sql:"size:255"`
+  ActivationToken string `sql:"size:255"`
+  Activated bool
 	CreatedAt time.Time
 }
 
@@ -133,4 +135,28 @@ func (u *Permission) BeforeCreate() (err error) {
 	}
 	u.Uuid = u4.String()
 	return
+}
+
+func (u *User) Activate() (err error) {
+	u4, err := uuid.NewV4()
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+  
+  u.ActivationToken = u4.String()
+	err = DB.Save(&u).Error
+	if err != nil {
+		return
+	}  
+  return
+}
+
+func (u *User) Deactivate() (err error) {
+  u.ActivationToken = nil
+	err = DB.Save(&u).Error
+	if err != nil {
+		return
+	}  
+  return  
 }
