@@ -168,7 +168,7 @@ func (u *User) Deactivate() (err error) {
 	}
   
   u.ActivationToken = u4.String()
-  u.Activated = true
+  u.Activated = false
 	err = DB.Save(u).Error
 	if err != nil {
 		return

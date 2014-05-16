@@ -99,6 +99,32 @@ func Test_ActivateUser(t *testing.T) {
 
 }
 
+func Test_DeactivateUser(t *testing.T) {
+  user := create_user("Sau Sheong", "sausheong@me.com", "123")
+  defer delete_user(user)
+
+  err := user.Activate(user.ActivationToken)
+  if err != nil {
+    t.Errorf("User cannot be activated because %v", err)
+  }
+
+  if user.Activated == false {
+    t.Errorf("User not activated yet")
+  }
+
+  err = user.Deactivate()
+  if err != nil {
+    t.Errorf("User cannot be activated because %v", err)
+  }
+
+  if user.Activated == true {
+    t.Errorf("User is still activated")
+  }
+
+
+}
+
+
 func create_user(name string, email string, password string) User {
   user := User{Name: name, Email: email, Password: password}
   err := DB.DB().Ping()
