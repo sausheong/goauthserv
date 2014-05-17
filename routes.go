@@ -53,7 +53,7 @@ func GetUsersNew(r render.Render) {
 	r.HTML(200, "users/new", nil)
 }
 
-// GET /users/edit/:uuid
+// GET /users/user/:uuid/edit
 func GetUsersEdit(r render.Render, params martini.Params) {
 	user := gdb.User{}
 	if gdb.DB.Where("uuid = ?", params["uuid"]).First(&user).RecordNotFound() {
@@ -63,7 +63,7 @@ func GetUsersEdit(r render.Render, params martini.Params) {
 	}
 }
 
-// GET /users/remove/:uuid
+// GET /users/user/:uuid/remove
 func GetUsersRemove(r render.Render, params martini.Params) {
 	user := gdb.User{}
 	if gdb.DB.Where("uuid = ?", params["uuid"]).First(&user).RecordNotFound() {
@@ -77,7 +77,7 @@ func GetUsersRemove(r render.Render, params martini.Params) {
 	}
 }
 
-// GET /users/reset/:uuid
+// GET /users/user/:uuid/reset
 func GetUsersReset(r render.Render, params martini.Params) {
 	user := gdb.User{}
 	if gdb.DB.Where("uuid = ?", params["uuid"]).First(&user).RecordNotFound() {
@@ -87,6 +87,19 @@ func GetUsersReset(r render.Render, params martini.Params) {
 		user.Password = utils.Hash([]byte(password), []byte(user.Salt))
 		gdb.DB.Save(&user)
 		go utils.SendResetPassword(user.Email, password)
+		r.Redirect("/users")
+	}
+}
+
+// GET /users/:uuid/activate
+func GetUsersActivate(r render.Render, params martini.Params) {
+	user := gdb.User{}
+	if gdb.DB.Where("activation_token = ?", params["uuid"]).First(&user).RecordNotFound() {
+		r.Error(404)
+	} else {
+    if err := user.Activate(params["uuid"]); err != nil {
+      r.Error(500)
+    }
 		r.Redirect("/users")
 	}
 }

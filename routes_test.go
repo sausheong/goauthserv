@@ -117,26 +117,41 @@ func Test_GetUsersRemove(t *testing.T) {
 	}
 }
 
-func Test_PostAuth(t *testing.T) {
+func Test_GetUsersRemove(t *testing.T) {
 	m := martini.Classic()
 	m.Use(render.Renderer())
-	store := sessions.NewCookieStore([]byte("test-goauthserv"))
-	m.Use(sessions.Sessions("test_session", store))
-	m.Post("/auth", PostAuth)
+	m.Get("/users/user/:uuid/remove", GetUsersRemove)
 
 	user := create_user("Sau Sheong", "sausheong@me.com", "123")
+
 	defer delete_user(user)
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/auth", nil)
-	req.ParseForm()
-	req.PostForm.Add("email", "sausheong@me.com")
-	req.PostForm.Add("password", "123")
+	url := strings.Join([]string{"/users/user/", user.Uuid, "/remove"}, "")
+	req, _ := http.NewRequest("GET", url, nil)
 
 	m.ServeHTTP(res, req)
 	if res.Code != 302 {
 		t.Errorf("Response code is %v", res.Code)
 	}
+}
 
+func Test_GetUsersActivate(t *testing.T) {
+	m := martini.Classic()
+	m.Use(render.Renderer())
+	user := create_user("Sau Sheong", "sausheong@me.com", "123")
+	defer delete_user(user)
+  
+  url := user.ActivationUrl
+  m.Get("/users/:uuid/activate", GetUserActivate)
+  
+
+	res := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", url, nil)
+
+	m.ServeHTTP(res, req)
+	if res.Code != 200 {
+		t.Errorf("Response code is %v", res.Code)
+	}  
 }
 
 func Test_PostAuthenticate(t *testing.T) {
