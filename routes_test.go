@@ -1,8 +1,6 @@
 package main
 
 import (
-	gdb "github.com/sausheong/goauthserv/db"
-
 	"bytes"
 	"encoding/json"
 	"io"
@@ -11,7 +9,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-
+  "goauthserv/db"
+  
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
   // "github.com/martini-contrib/sessions"
@@ -211,23 +210,23 @@ func to_byte_array(stream io.Reader) []byte {
 	return buf.Bytes()
 }
 
-func create_user(name string, email string, password string) gdb.User {
-	user := gdb.User{Name: name, Email: email, Password: password}
-	err := gdb.DB.DB().Ping()
+func create_user(name string, email string, password string) db.User {
+	user := db.User{Name: name, Email: email, Password: password}
+	err := db.DB.DB().Ping()
 	if err != nil {
 		return user
 	} else {
-		gdb.DB.Save(&user)
+		db.DB.Save(&user)
 		return user
 	}
 }
 
-func delete_user(user gdb.User) (err error) {
-	db_err := gdb.DB.DB().Ping()
+func delete_user(user db.User) (err error) {
+	db_err := db.DB.DB().Ping()
 	if db_err != nil {
 		return
 	} else {
-		err = gdb.DB.Delete(&user).Error
+		err = db.DB.Delete(&user).Error
 		return
 	}
 }

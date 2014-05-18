@@ -1,12 +1,14 @@
 package main
 
 import (
-	"github.com/go-martini/martini"
-	"github.com/martini-contrib/render"
-	"github.com/martini-contrib/sessions"
-	gdb "github.com/sausheong/goauthserv/db"
-	"github.com/sausheong/goauthserv/utils"
 	"net/http"
+	"goauthserv/db"
+  
+  "github.com/go-martini/martini"
+	"github.com/martini-contrib/render"
+	"github.com/martini-contrib/sessions"	
+	"github.com/sausheong/goauthserv/utils"
+
 )
 
 // GET /
@@ -29,7 +31,7 @@ func GetLogout(s sessions.Session, r render.Render) {
 func PostAuth(s sessions.Session, r render.Render, req *http.Request) {
 	email := req.PostFormValue("email")
 	password := req.PostFormValue("password")
-	session_id, err := gdb.Auth(email, password)
+	session_id, err := db.Auth(email, password)
 	if err != nil {
 		r.Error(401)
 	} else {
@@ -40,8 +42,8 @@ func PostAuth(s sessions.Session, r render.Render, req *http.Request) {
 
 // GET /users
 func GetUsers(r render.Render) {
-	users := []gdb.User{}
-	if gdb.DB.Find(&users).RecordNotFound() {
+	users := []db.User{}
+	if db.DB.Find(&users).RecordNotFound() {
 		r.Error(404)
 	} else {
 		r.HTML(200, "users", users)
@@ -55,8 +57,8 @@ func GetUsersNew(r render.Render) {
 
 // GET /users/user/:uuid/edit
 func GetUsersEdit(r render.Render, params martini.Params) {
-	user := gdb.User{}
-	if gdb.DB.Where("uuid = ?", params["uuid"]).First(&user).RecordNotFound() {
+	user := db.User{}
+	if db.DB.Where("uuid = ?", params["uuid"]).First(&user).RecordNotFound() {
 		r.Error(404)
 	} else {
 		r.HTML(200, "users/edit", user)
@@ -65,11 +67,11 @@ func GetUsersEdit(r render.Render, params martini.Params) {
 
 // GET /users/user/:uuid/remove
 func GetUsersRemove(r render.Render, params martini.Params) {
-	user := gdb.User{}
-	if gdb.DB.Where("uuid = ?", params["uuid"]).First(&user).RecordNotFound() {
+	user := db.User{}
+	if db.DB.Where("uuid = ?", params["uuid"]).First(&user).RecordNotFound() {
 		r.Error(404)
 	} else {
-		if err := gdb.DB.Delete(&user).Error; err != nil {
+		if err := db.DB.Delete(&user).Error; err != nil {
 			r.Error(500)
 		} else {
 			r.Redirect("/users")
@@ -79,13 +81,13 @@ func GetUsersRemove(r render.Render, params martini.Params) {
 
 // GET /users/user/:uuid/reset
 func GetUsersReset(r render.Render, params martini.Params) {
-	user := gdb.User{}
-	if gdb.DB.Where("uuid = ?", params["uuid"]).First(&user).RecordNotFound() {
+	user := db.User{}
+	if db.DB.Where("uuid = ?", params["uuid"]).First(&user).RecordNotFound() {
 		r.Error(404)
 	} else {
 		password := utils.RandPassword(8)
 		user.Password = utils.Hash([]byte(password), []byte(user.Salt))
-		gdb.DB.Save(&user)
+		db.DB.Save(&user)
 		go utils.SendResetPassword(user.Email, password)
 		r.Redirect("/users")
 	}
@@ -93,8 +95,8 @@ func GetUsersReset(r render.Render, params martini.Params) {
 
 // GET /users/:uuid/activate
 func GetUsersActivate(r render.Render, params martini.Params) {
-  user := gdb.User{}
-  if gdb.DB.Where("activation_token = ?", params["uuid"]).First(&user).RecordNotFound() {
+  user := db.User{}
+  if db.DB.Where("activation_token = ?", params["uuid"]).First(&user).RecordNotFound() {
     r.Error(404)
   } else {
     if err := user.Activate(); err != nil {
@@ -110,17 +112,17 @@ func PostUsers(r render.Render, req *http.Request) {
 	email := req.PostFormValue("email")
 	password := req.PostFormValue("password")
 	uuid := req.PostFormValue("uuid")
-	var user = gdb.User{}
+	var user = db.User{}
 	if uuid != "" {
-		if gdb.DB.Where("uuid = ?", uuid).First(&user).RecordNotFound() {
+		if db.DB.Where("uuid = ?", uuid).First(&user).RecordNotFound() {
 			r.Error(404)
 		}
 		user.Name = name
 		user.Email = email
 	} else {
-		user = gdb.User{Name: name, Email: email, Password: password}
+		user = db.User{Name: name, Email: email, Password: password}
 	}
-	if err := gdb.DB.Save(&user).Error; err != nil {
+	if err := db.DB.Save(&user).Error; err != nil {
 		r.Error(500)
 	} else {
 		r.Redirect("/users")
@@ -131,7 +133,7 @@ func PostUsers(r render.Render, req *http.Request) {
 func PostAuthenticate(r render.Render, req *http.Request) {
 	email := req.PostFormValue("email")
 	password := req.PostFormValue("password")
-	session_id, err := gdb.Auth(email, password)
+	session_id, err := db.Auth(email, password)
 	if err != nil {
 		r.Error(401)
 	} else {
@@ -142,8 +144,8 @@ func PostAuthenticate(r render.Render, req *http.Request) {
 // POST /validate
 func PostValidate(r render.Render, req *http.Request) {
 	s := req.PostFormValue("session")
-	session := gdb.Session{}
-	if gdb.DB.Where("uuid = ?", s).First(&session).RecordNotFound() {
+	session := db.Session{}
+	if db.DB.Where("uuid = ?", s).First(&session).RecordNotFound() {
 		r.Error(404)
 	} else {
 		r.Status(200)

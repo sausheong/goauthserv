@@ -6,10 +6,12 @@ import (
 	"strings"
 	"time"
 
+  "goauthserv/utils"
+  
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"github.com/nu7hatch/gouuid"
-	"github.com/sausheong/goauthserv/utils"
+	
 )
 
 type User struct {
