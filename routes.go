@@ -4,7 +4,7 @@ import (
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
 	"github.com/martini-contrib/sessions"
-	gdb "goauthserv/db"
+	gdb "github.com/sausheonggoauthserv/db"
 	"github.com/sausheong/goauthserv/utils"
 	"net/http"
 )
