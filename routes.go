@@ -2,7 +2,7 @@ package main
 
 import (
 	"net/http"
-	"goauthserv/db"
+	"github.com/sausheong/goauthserv/db"
   
   "github.com/go-martini/martini"
 	"github.com/martini-contrib/render"

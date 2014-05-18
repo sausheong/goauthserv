@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-  "goauthserv/utils"
+  "github.com/sausheong/goauthserv/utils"
   
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"

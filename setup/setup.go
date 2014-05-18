@@ -1,7 +1,7 @@
 package main
 
 import (
-	"goauthserv/db"
+	"github.com/sausheong/goauthserv/db"
 )
 
 func main() {
