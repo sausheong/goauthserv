@@ -3,23 +3,25 @@ package db
 import (
 	"errors"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"github.com/nu7hatch/gouuid"
 	"github.com/sausheong/goauthserv/utils"
-	"time"
 )
 
 type User struct {
-	Id        int64
-	Uuid      string `sql:"size:255;not null;unique"`
-	Email     string `sql:"size:255"`
-	Password  string `sql:"size:255"`
-	Name      string `sql:"size:255"`
-	Salt      string `sql:"size:255"`
-  ActivationToken string `sql:"size:255"`
-  Activated bool
-	CreatedAt time.Time
+	Id              int64
+	Uuid            string `sql:"size:255;not null;unique"`
+	Email           string `sql:"size:255"`
+	Password        string `sql:"size:255"`
+	Name            string `sql:"size:255"`
+	Salt            string `sql:"size:255"`
+	ActivationToken string `sql:"size:255"`
+	Activated       bool
+	CreatedAt       time.Time
 }
 
 type Session struct {
@@ -73,19 +75,18 @@ func (u *User) BeforeCreate() (err error) {
 		fmt.Println("Salt error:", err)
 		return
 	}
-  
-  token, err := uuid.NewV4()
+
+	token, err := uuid.NewV4()
 	if err != nil {
 		fmt.Println("Token error:", err)
 		return
 	}
-  
-  
+
 	hashed := utils.Hash([]byte(u.Password), []byte(u4.String()))
 	u.Password = hashed
 	u.Salt = u4.String()
 	u.Uuid = u5.String()
-  u.ActivationToken = token.String()
+	u.ActivationToken = token.String()
 	return
 }
 
@@ -146,18 +147,14 @@ func (u *Permission) BeforeCreate() (err error) {
 	return
 }
 
-func (u *User) Activate(token string) (err error) {
-  if u.ActivationToken == token {
-    u.ActivationToken = ""
-    u.Activated = true
-  	err = DB.Save(u).Error
-  	if err != nil {
-  		return
-  	}      
-  } else {
-    err = errors.New("Wrong token")
-  }
-  return
+func (u *User) Activate() (err error) {
+	u.ActivationToken = ""
+	u.Activated = true
+	err = DB.Save(u).Error
+	if err != nil {
+		return
+	}
+	return
 }
 
 func (u *User) Deactivate() (err error) {
@@ -166,12 +163,21 @@ func (u *User) Deactivate() (err error) {
 		fmt.Println("error:", err)
 		return
 	}
-  
-  u.ActivationToken = u4.String()
-  u.Activated = false
+
+	u.ActivationToken = u4.String()
+	u.Activated = false
 	err = DB.Save(u).Error
 	if err != nil {
 		return
-	}  
-  return
+	}
+	return
+}
+
+func (u *User) ActivationUrl() (url string, err error) {
+	if u.Activated == false {
+		url = strings.Join([]string{"/users/", u.ActivationToken, "/activate"}, "")
+	} else {
+		err = errors.New("User not activated yet")
+	}
+	return
 }

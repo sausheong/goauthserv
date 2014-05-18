@@ -1,7 +1,7 @@
 package main
 
 import (
-	gdb "github.com/sausheong/goauthserv/db"
+	gdb "goauthserv/db"
 
 	"bytes"
 	"encoding/json"
@@ -14,7 +14,7 @@ import (
 
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
-	"github.com/martini-contrib/sessions"
+  // "github.com/martini-contrib/sessions"
 )
 
 func Test_GetIndex(t *testing.T) {
@@ -117,41 +117,26 @@ func Test_GetUsersRemove(t *testing.T) {
 	}
 }
 
-func Test_GetUsersRemove(t *testing.T) {
-	m := martini.Classic()
-	m.Use(render.Renderer())
-	m.Get("/users/user/:uuid/remove", GetUsersRemove)
-
-	user := create_user("Sau Sheong", "sausheong@me.com", "123")
-
-	defer delete_user(user)
-	res := httptest.NewRecorder()
-	url := strings.Join([]string{"/users/user/", user.Uuid, "/remove"}, "")
-	req, _ := http.NewRequest("GET", url, nil)
-
-	m.ServeHTTP(res, req)
-	if res.Code != 302 {
-		t.Errorf("Response code is %v", res.Code)
-	}
-}
-
 func Test_GetUsersActivate(t *testing.T) {
-	m := martini.Classic()
-	m.Use(render.Renderer())
-	user := create_user("Sau Sheong", "sausheong@me.com", "123")
-	defer delete_user(user)
+  m := martini.Classic()
+  m.Use(render.Renderer())
+  user := create_user("Sau Sheong", "sausheong@me.com", "123")
+  defer delete_user(user)
   
-  url := user.ActivationUrl
-  m.Get("/users/:uuid/activate", GetUserActivate)
+  activation_url, err := user.ActivationUrl()
+  if err != nil {
+    t.Errorf("Error is %v", err)
+  }
+  m.Get("/users/:uuid/activate", GetUsersActivate)
   
 
-	res := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", url, nil)
+  res := httptest.NewRecorder()
+  req, _ := http.NewRequest("GET", activation_url, nil)
 
-	m.ServeHTTP(res, req)
-	if res.Code != 200 {
-		t.Errorf("Response code is %v", res.Code)
-	}  
+  m.ServeHTTP(res, req)
+  if res.Code != 200 {
+    t.Errorf("Response code is %v", res.Code)
+  }  
 }
 
 func Test_PostAuthenticate(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
 	"github.com/martini-contrib/sessions"
-	gdb "github.com/sausheong/goauthserv/db"
+	gdb "goauthserv/db"
 	"github.com/sausheong/goauthserv/utils"
 	"net/http"
 )
@@ -93,15 +93,15 @@ func GetUsersReset(r render.Render, params martini.Params) {
 
 // GET /users/:uuid/activate
 func GetUsersActivate(r render.Render, params martini.Params) {
-	user := gdb.User{}
-	if gdb.DB.Where("activation_token = ?", params["uuid"]).First(&user).RecordNotFound() {
-		r.Error(404)
-	} else {
-    if err := user.Activate(params["uuid"]); err != nil {
+  user := gdb.User{}
+  if gdb.DB.Where("activation_token = ?", params["uuid"]).First(&user).RecordNotFound() {
+    r.Error(404)
+  } else {
+    if err := user.Activate(); err != nil {
       r.Error(500)
     }
-		r.Redirect("/users")
-	}
+    r.Status(200)
+  }
 }
 
 // POST /users
