@@ -1,7 +1,7 @@
 package main
 
 import (
-	gdb "github.com/sausheonggoauthserv/db"
+	gdb "github.com/sausheong/goauthserv/db"
 
 	"bytes"
 	"encoding/json"
